@@ -150,14 +150,14 @@ export default function DashboardPage() {
                   </span>
                 </div>
                 <span className="text-[10px] font-black text-emerald-500 bg-emerald-500/10 px-2 py-1 rounded">
-                  {isAdmin ? 'Stable' : '+12.5%'}
+                  {isAdmin ? 'Stable' : '0%'}
                 </span>
               </div>
               <p className="section-label">
                 {isAdmin ? 'Security Protocols' : isClient ? 'Total Investment' : 'Total Revenue'}
               </p>
               <h3 className="text-3xl font-black tracking-tighter text-slate-900 dark:text-white mb-1">
-                {isAdmin ? 'Level 4' : isClient ? 'Rs. 125,400' : `Rs. ${profile?.hourly_rate ? (profile.hourly_rate * 160).toLocaleString() : '12,450'}`}
+                {isAdmin ? 'Level 4' : isClient ? 'Rs. 0' : 'Rs. 0'}
               </h3>
             </div>
           </div>
@@ -182,7 +182,7 @@ export default function DashboardPage() {
                 </div>
               )}
               <div className="text-right">
-                <h4 className="text-lg font-bold leading-none">{isAdmin ? 'Verified' : isClient ? '42' : '2.4k'}</h4>
+                <h4 className="text-lg font-bold leading-none">{isAdmin ? 'Verified' : isClient ? '0' : '0'}</h4>
                 <p className="text-[8px] font-black text-accent uppercase tracking-widest">
                   {isAdmin ? 'Cluster 01' : isClient ? 'Active Bids' : 'Connections'}
                 </p>
@@ -203,7 +203,7 @@ export default function DashboardPage() {
           },
           { 
             label: isAdmin ? 'Pending Verifications' : isClient ? 'Active Hires' : 'Platform Tier', 
-            value: isAdmin ? dashboardStats?.pending_verifications : isClient ? '0' : profile?.tier_level || 'Elite', 
+            value: isAdmin ? dashboardStats?.pending_verifications : isClient ? '0' : profile?.tier_level || 'Beginner', 
             icon: isAdmin ? 'rule' : isClient ? 'person_pin' : 'military_tech', 
             color: 'text-amber-500' 
           },
