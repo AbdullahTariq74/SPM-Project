@@ -128,8 +128,62 @@ const verifyCertification = async (req, res) => {
   }
 };
 
+const deleteCertification = async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const { certId } = req.params;
+
+    const result = await pool.query(
+      "DELETE FROM certifications WHERE id = $1 AND user_id = $2 RETURNING *",
+      [certId, userId]
+    );
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ message: "Certification not found ❌" });
+    }
+
+    res.json({ success: true, message: "Certification deleted ✅" });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Server error ❌" });
+  }
+};
+
+const updateCertification = async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const { certId } = req.params;
+    const { certification_name, issuing_authority, credential_id, issue_date, expiry_date, verification_url } = req.body;
+
+    const result = await pool.query(
+      `UPDATE certifications 
+       SET certification_name = COALESCE($1, certification_name),
+           issuing_authority = COALESCE($2, issuing_authority),
+           credential_id = COALESCE($3, credential_id),
+           issue_date = COALESCE($4, issue_date),
+           expiry_date = COALESCE($5, expiry_date),
+           verification_url = COALESCE($6, verification_url),
+           updated_at = NOW()
+       WHERE id = $7 AND user_id = $8
+       RETURNING *`,
+      [certification_name, issuing_authority, credential_id, issue_date, expiry_date, verification_url, certId, userId]
+    );
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ message: "Certification not found ❌" });
+    }
+
+    res.json({ success: true, certification: result.rows[0] });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Server error ❌" });
+  }
+};
+
 module.exports = {
   getCertifications,
   createCertification,
-  verifyCertification
+  verifyCertification,
+  updateCertification,
+  deleteCertification
 };

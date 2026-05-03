@@ -7,8 +7,12 @@ const {
   createReview,
   getReviews,
   updateReview,
-  deleteReview
+  deleteReview,
+  getMyRecentReviews
 } = require("../controllers/review.controller");
+
+// MY RECENT REVIEWS
+router.get("/me/recent", auth, getMyRecentReviews);
 
 // GET REVIEWS
 router.get("/:freelancerId", getReviews);

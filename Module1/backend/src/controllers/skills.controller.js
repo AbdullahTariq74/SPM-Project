@@ -99,8 +99,9 @@ const getUserSkills = async (req, res) => {
 
     const result = await db.query(
       `
-      SELECT 
+      SELECT
         us.id,
+        us.skill_id,
         s.skill_name,
         s.category,
         us.skill_level,

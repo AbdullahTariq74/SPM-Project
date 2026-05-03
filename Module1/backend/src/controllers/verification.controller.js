@@ -102,8 +102,42 @@ const reviewRequest = async (req, res) => {
   }
 };
 
+// GET ALL VERIFICATION REQUESTS (ADMIN)
+const getAllVerificationRequests = async (req, res) => {
+  try {
+    if (req.user.role !== 'admin') {
+      return res.status(403).json({ message: "Admin access required ❌" });
+    }
+
+    const { status } = req.query;
+
+    let query = `
+      SELECT vr.*, u.first_name, u.last_name, u.email
+      FROM verification_requests vr
+      JOIN users u ON vr.user_id = u.id
+    `;
+    const params = [];
+
+    if (status) {
+      params.push(status);
+      query += ` WHERE vr.verification_status = $1`;
+    }
+
+    query += ` ORDER BY vr.requested_at DESC`;
+
+    const result = await pool.query(query, params);
+
+    res.json({ success: true, requests: result.rows });
+
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
 module.exports = {
   submitVerificationRequest,
   getUserRequests,
-  reviewRequest
+  reviewRequest,
+  getAllVerificationRequests
 };

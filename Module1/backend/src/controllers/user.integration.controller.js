@@ -141,19 +141,139 @@ const getUserVerification = async (req, res) => {
 // =========================
 const searchUsers = async (req, res) => {
   try {
-    const { role } = req.query;
+    const { role, q, skill } = req.query;
 
-    const result = await pool.query(
-      `SELECT id, first_name, last_name, role
-       FROM users
-       WHERE role = $1`,
-      [role]
-    );
+    let query = `
+      SELECT DISTINCT
+        u.id, u.first_name, u.last_name, u.role, u.country, u.is_identity_verified, u.account_status,
+        p.headline, p.profile_image_url, p.hourly_rate, p.average_rating, p.total_reviews, p.trust_score, p.tier_level
+      FROM users u
+      LEFT JOIN profiles p ON u.id = p.user_id
+      LEFT JOIN user_skills us ON u.id = us.user_id
+      LEFT JOIN skills s ON us.skill_id = s.id
+    `;
+    const params = [];
+    const conditions = [];
+
+    if (role) {
+      params.push(role);
+      conditions.push(`u.role = $${params.length}`);
+    }
+
+    // GENERAL SEARCH (Name, Headline, Skill)
+    if (q) {
+      params.push(`%${q}%`);
+      const searchParam = `$${params.length}`;
+      conditions.push(`(
+        u.first_name ILIKE ${searchParam} OR 
+        u.last_name ILIKE ${searchParam} OR 
+        p.headline ILIKE ${searchParam} OR 
+        s.skill_name ILIKE ${searchParam}
+      )`);
+    }
+
+    // SPECIFIC SKILL FILTER
+    if (skill) {
+      params.push(`%${skill}%`);
+      conditions.push(`s.skill_name ILIKE $${params.length}`);
+    }
+
+    if (conditions.length > 0) {
+      query += ` WHERE ` + conditions.join(' AND ');
+    }
+
+    query += ` ORDER BY u.id DESC`;
+
+    const result = await pool.query(query, params);
 
     res.json({
       success: true,
       users: result.rows
     });
+
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
+// =========================
+// 7. DASHBOARD STATS
+// =========================
+const getDashboardStats = async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const { role } = req.user;
+
+    let stats = {};
+
+    if (role === 'freelancer') {
+      const result = await pool.query(
+        `SELECT trust_score, tier_level, average_rating, total_reviews, profile_image_url
+         FROM profiles WHERE user_id = $1`,
+        [userId]
+      );
+      stats = result.rows[0] || {};
+    } else if (role === 'client') {
+      // For client, we can count how many reviews they've given and the average
+      const result = await pool.query(
+        `SELECT COUNT(*) as reviews_given, AVG(rating)::numeric(10,1) as avg_rating_given 
+         FROM reviews WHERE reviewer_id = $1`,
+        [userId]
+      );
+      stats = {
+        reviews_given: parseInt(result.rows[0]?.reviews_given || 0),
+        avg_rating_given: result.rows[0]?.avg_rating_given || '0.0'
+      };
+    } else if (role === 'admin') {
+      const userCount = await pool.query("SELECT COUNT(*) FROM users");
+      const pendingVerifications = await pool.query("SELECT COUNT(*) FROM verification_requests WHERE verification_status = 'pending'");
+      stats = {
+        total_users: parseInt(userCount.rows[0]?.count || 0),
+        pending_verifications: parseInt(pendingVerifications.rows[0]?.count || 0)
+      };
+    }
+
+    res.json({
+      success: true,
+      stats
+    });
+
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
+// =========================
+// 8. UPDATE USER STATUS (ADMIN)
+// =========================
+const updateUserStatus = async (req, res) => {
+  try {
+    if (req.user.role !== 'admin') {
+      return res.status(403).json({ message: "Admin access required ❌" });
+    }
+
+    const { userId } = req.params;
+    const { account_status } = req.body;
+
+    const validStatuses = ['active', 'suspended', 'banned'];
+    if (!validStatuses.includes(account_status)) {
+      return res.status(400).json({ message: "Invalid status. Must be active, suspended, or banned." });
+    }
+
+    const result = await pool.query(
+      `UPDATE users SET account_status = $1, updated_at = NOW()
+       WHERE id = $2
+       RETURNING id, first_name, last_name, email, role, account_status`,
+      [account_status, userId]
+    );
+
+    if (!result.rows.length) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    res.json({ success: true, message: "User status updated ✅", user: result.rows[0] });
 
   } catch (err) {
     console.error(err);
@@ -167,5 +287,7 @@ module.exports = {
   getUserSkills,
   getUserTrust,
   getUserVerification,
-  searchUsers
+  searchUsers,
+  getDashboardStats,
+  updateUserStatus
 };

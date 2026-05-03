@@ -20,6 +20,12 @@ const portfolioRoutes = require('./src/routes/portfolio.routes');
 const skillsRoutes = require('./src/routes/skills.routes');
 const reviewRoutes = require('./src/routes/review.routes');
 const workRoutes = require('./src/routes/workHistory.routes');
+const certificationRoutes = require('./src/routes/certification.routes');
+const verificationRoutes = require('./src/routes/verification.routes');
+const leaderboardRoutes = require('./src/routes/leaderboard.routes');
+const userIntegrationRoutes = require('./src/routes/user.integration.routes');
+const badgeRoutes = require('./src/routes/badge.routes');
+
 // ---------------- ROUTES ----------------
 app.use('/api/auth', authRoutes);
 app.use('/api/profiles', profileRoutes);
@@ -27,6 +33,11 @@ app.use('/api/portfolio', portfolioRoutes);
 app.use('/api/skills', skillsRoutes);
 app.use('/api/reviews', reviewRoutes);
 app.use('/api/work', workRoutes);
+app.use('/api/certifications', certificationRoutes);
+app.use('/api/verification', verificationRoutes);
+app.use('/api/leaderboard', leaderboardRoutes);
+app.use('/api/users', userIntegrationRoutes);
+app.use('/api/badges', badgeRoutes);
 
 // ---------------- ROOT ----------------
 app.get('/', (req, res) => {
@@ -54,12 +65,7 @@ app.use((err, req, res, next) => {
   next();
 });
 
-app.use("/api/work", require("./src/routes/workHistory.routes"));
-app.use("/api/certifications", require("./src/routes/certification.routes"));
-app.use("/api/reviews", require("./src/routes/review.routes"));
-app.use("/api/verification", require("./src/routes/verification.routes"));
-app.use("/api/leaderboard", require("./src/routes/leaderboard.routes"));
-app.use("/api/users", require("./src/routes/user.integration.routes"));
+
 
 // ---------------- SERVER ----------------
 const PORT = process.env.PORT || 5001;

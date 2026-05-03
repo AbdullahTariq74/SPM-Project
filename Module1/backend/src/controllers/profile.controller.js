@@ -121,11 +121,37 @@ const getMyProfile = async (req, res) => {
 
     const result = await pool.query(
       `
-      SELECT 
+      SELECT
         u.id,
         u.email,
+        u.first_name,
+        u.last_name,
+        u.display_name,
         u.role,
-        p.*
+        u.is_identity_verified,
+        p.id AS profile_id,
+        p.user_id,
+        p.headline,
+        p.bio,
+        p.location,
+        p.profile_image_url,
+        p.banner_image_url,
+        p.hourly_rate,
+        p.experience_years,
+        p.availability_status,
+        p.impact_points,
+        p.social_contribution_level,
+        p.national_builder_badge,
+        p.trust_score,
+        p.total_reviews,
+        p.average_rating,
+        p.tier_level,
+        p.reputation_level,
+        p.achievement_points,
+        p.skills,
+        p.badges,
+        p.created_at,
+        p.updated_at
       FROM users u
       JOIN profiles p ON u.id = p.user_id
       WHERE u.id = $1
@@ -155,11 +181,12 @@ const getPublicProfile = async (req, res) => {
 
     const result = await pool.query(
       `
-      SELECT 
+      SELECT
         u.id,
         u.first_name,
         u.last_name,
         u.role,
+        u.is_identity_verified,
         p.headline,
         p.bio,
         p.location,
@@ -181,13 +208,18 @@ const getPublicProfile = async (req, res) => {
       [userId]
     );
 
+    if (result.rows.length === 0) {
+      return res.status(404).json({ message: "Profile not found ❌" });
+    }
+
     const skillsResult = await pool.query(
   `
-  SELECT 
+  SELECT
     s.skill_name,
     s.category,
     us.skill_level,
-    us.years_of_experience
+    us.years_of_experience,
+    us.is_certified
   FROM user_skills us
   JOIN skills s ON us.skill_id = s.id
   WHERE us.user_id = $1
@@ -259,12 +291,6 @@ const reviewsResult = await pool.query(
   [userId]
 );
 
-if (result.rows.length === 0) {
-      return res.status(404).json({
-        message: "Profile not found ❌"
-      });
-    }
-
 const badgesResult = await pool.query(
   `
   SELECT b.badge_name, b.badge_description, ub.awarded_at
@@ -297,7 +323,6 @@ res.json({
 };
 
 const uploadAvatar = async (req, res) => {
-    console.log("FILE RECEIVED:", req.file);
   try {
     const userId = req.user.id;
 

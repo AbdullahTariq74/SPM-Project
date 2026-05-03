@@ -7,7 +7,9 @@ const allowRoles = require("../middleware/role.middleware");
 const {
   getCertifications,
   createCertification,
-  verifyCertification
+  verifyCertification,
+  updateCertification,
+  deleteCertification
 } = require("../controllers/certification.controller");
 
 const upload = require("../utils/upload");
@@ -15,13 +17,27 @@ const upload = require("../utils/upload");
 // PUBLIC VIEW
 router.get("/:userId", getCertifications);
 
-// CREATE CERTIFICATION (FREELANCER ONLY)
+// FREELANCER ACTIONS
 router.post(
   "/",
   auth,
   allowRoles("freelancer"),
   upload.single("certificate"),
   createCertification
+);
+
+router.put(
+  "/:certId",
+  auth,
+  allowRoles("freelancer"),
+  updateCertification
+);
+
+router.delete(
+  "/:certId",
+  auth,
+  allowRoles("freelancer"),
+  deleteCertification
 );
 
 router.patch(

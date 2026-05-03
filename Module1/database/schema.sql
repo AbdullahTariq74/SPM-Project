@@ -25,6 +25,8 @@ CREATE TABLE IF NOT EXISTS users (
     last_moderated_by INTEGER REFERENCES users(id) ON DELETE SET NULL,
     last_moderated_at TIMESTAMP,
     deleted_at TIMESTAMP,
+    reset_token VARCHAR(255),
+    reset_token_expiry TIMESTAMP,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
@@ -46,7 +48,7 @@ CREATE TABLE IF NOT EXISTS profiles (
     reputation_level INTEGER DEFAULT 1,
     tier_level VARCHAR(20) DEFAULT 'beginner',
     achievement_points INTEGER DEFAULT 0,
-    trust_score NUMERIC(3,2) DEFAULT 0 CHECK (trust_score BETWEEN 0 AND 5),
+    trust_score NUMERIC(5,2) DEFAULT 0 CHECK (trust_score BETWEEN 0 AND 100),
     total_reviews INTEGER DEFAULT 0,
     average_rating NUMERIC(2,1) DEFAULT 0,
     skills TEXT[] DEFAULT '{}',
@@ -106,6 +108,7 @@ CREATE TABLE IF NOT EXISTS certifications (
     certificate_file_url VARCHAR(500),
     verified_by INTEGER REFERENCES users(id) ON DELETE SET NULL,
     verified_at TIMESTAMP,
+    rejection_reason TEXT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );

@@ -1,0 +1,10 @@
+# Module 1 — Ralph Loop Progress Checkpoint
+# Format: [DONE] Task XX — description
+# ─────────────────────────────────────────────────────────────────────
+# PRE-VERIFIED: All tasks below confirmed done before loop started.
+# The loop MUST resume from Task B1 (tailwind.config.js).
+# ─────────────────────────────────────────────────────────────────────
+[DONE] Task A1 — Removed console.log("Decoded token") from auth.middleware.js
+[DONE] Task A2 — profile.routes.js already has PUT /:userId route (pre-existing)
+[DONE] Task A3 — Removed console.log from profile.controller.js uploadAvatar and utils/upload.js
+[DONE] Task A4 — Created Module1/backend/uploads/.gitkeep

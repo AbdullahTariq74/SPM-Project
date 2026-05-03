@@ -7,7 +7,8 @@ const upload = require("../middleware/upload.middleware");
 const {
   submitVerificationRequest,
   getUserRequests,
-  reviewRequest
+  reviewRequest,
+  getAllVerificationRequests
 } = require("../controllers/verification.controller");
 
 // USER
@@ -18,9 +19,10 @@ router.post(
   submitVerificationRequest
 );
 
-router.get("/:userId", auth, getUserRequests);
+// ADMIN (must come before /:userId to avoid shadowing)
+router.get("/admin/all", auth, getAllVerificationRequests);
 
-// ADMIN
+router.get("/:userId", auth, getUserRequests);
 router.patch("/review/:requestId", auth, reviewRequest);
 
 module.exports = router;

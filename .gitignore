@@ -26,3 +26,5 @@ npm-debug.log*
 
 # Ralph Loop
 progress.md
+# Added by code-review-graph
+.code-review-graph/
