@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import api from '../services/api';
+import api, { BASE_URL } from '../services/api';
 import { profileService } from '../services/profileService';
 import { useToast } from '../context/ToastContext';
 import { useAuth } from '../context/AuthContext';
@@ -65,8 +65,14 @@ export default function DashboardPage() {
       <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-4">
         <div>
           <div className="flex items-center gap-2 mb-1">
-            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-            <p className="section-label mb-0">System Live • {role.toUpperCase()} Console</p>
+            <span className={`w-2 h-2 rounded-full animate-pulse ${isAdmin ? 'bg-amber-500' : isClient ? 'bg-emerald-500' : 'bg-accent'}`}></span>
+            <p className="section-label mb-0 flex items-center gap-1">
+              System Live • 
+              <span className={`font-black ${isAdmin ? 'text-amber-500' : isClient ? 'text-emerald-500' : 'text-accent'}`}>
+                {role.toUpperCase()}
+              </span> 
+              Console
+            </p>
           </div>
           <h2 className="text-3xl font-black tracking-tighter text-slate-900 dark:text-white uppercase leading-none">
             {isAdmin ? 'Platform Operations' : isClient ? 'Client Command' : 'Professional Workspace'}
@@ -309,7 +315,7 @@ export default function DashboardPage() {
                 freelancers.slice(0, 3).map((f) => (
                   <Link key={f.id} to={`/profile/${f.id}`} className="flex items-center gap-3 p-3 rounded-xl bg-slate-50 dark:bg-white/5 border border-transparent hover:border-slate-200 dark:hover:border-white/10 transition-all cursor-pointer group">
                     <div className="w-10 h-10 rounded-full overflow-hidden bg-slate-200">
-                      <img src={f.profile_image_url ? `${import.meta.env.VITE_BASE_URL}${f.profile_image_url}` : `https://i.pravatar.cc/100?u=talent${f.id}`} alt="" />
+                      <img src={f.profile_image_url ? `${BASE_URL}${f.profile_image_url}` : `https://i.pravatar.cc/100?u=talent${f.id}`} alt="" />
                     </div>
                     <div className="flex-1">
                       <p className="text-xs font-black text-slate-900 dark:text-white leading-none group-hover:text-primary transition-colors">
@@ -339,7 +345,7 @@ export default function DashboardPage() {
                     <div className="w-10 h-10 rounded-full overflow-hidden bg-slate-200 flex-shrink-0">
                       <img
                         src={f.profile_image_url
-                          ? `${import.meta.env.VITE_BASE_URL}${f.profile_image_url}`
+                          ? `${BASE_URL}${f.profile_image_url}`
                           : `https://i.pravatar.cc/100?u=lb${f.id}`}
                         alt=""
                         className="w-full h-full object-cover"

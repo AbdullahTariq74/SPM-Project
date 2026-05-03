@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { profileService } from '../services/profileService';
+import { BASE_URL } from '../services/api';
 import { useToast } from '../context/ToastContext';
 
 export default function PublicProfilePage() {
@@ -26,12 +27,12 @@ export default function PublicProfilePage() {
       {/* Header Card */}
       <div className="card overflow-hidden">
         <div className="h-64 bg-slate-200 dark:bg-white/5">
-          {data.banner_image_url && <img src={data.banner_image_url.startsWith('http') ? data.banner_image_url : `http://localhost:5001${data.banner_image_url}`} className="w-full h-full object-cover" alt="banner" />}
+          {data.banner_image_url && <img src={data.banner_image_url.startsWith('http') ? data.banner_image_url : `${BASE_URL}${data.banner_image_url}`} className="w-full h-full object-cover" alt="banner" />}
         </div>
         <div className="px-8 pb-8">
           <div className="relative -mt-16 mb-6 flex items-end gap-6">
             <div className="w-40 h-40 rounded-2xl border-8 border-white dark:border-surface-container-dark bg-slate-100 overflow-hidden shadow-2xl">
-              <img src={data.profile_image_url ? (data.profile_image_url.startsWith('http') ? data.profile_image_url : `http://localhost:5001${data.profile_image_url}`) : `https://ui-avatars.com/api/?name=${data.first_name}+${data.last_name}&size=256`} className="w-full h-full object-cover" alt="avatar" />
+              <img src={data.profile_image_url ? (data.profile_image_url.startsWith('http') ? data.profile_image_url : `${BASE_URL}${data.profile_image_url}`) : `https://ui-avatars.com/api/?name=${data.first_name}+${data.last_name}&size=256`} className="w-full h-full object-cover" alt="avatar" />
             </div>
             <div className="pb-4 flex-1">
               <div className="flex items-center gap-3">

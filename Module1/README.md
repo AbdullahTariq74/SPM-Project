@@ -19,34 +19,35 @@ Module 1 handles the core identity layer of the platform, including user registr
 
 ## ⚙️ Setup Instructions
 
-### 1. Database Setup
-Run the SQL files in order:
-```bash
-psql -U postgres -d SPM_db -f Module1/database/schema.sql
-psql -U postgres -d SPM_db -f Module1/database/triggers.sql
-```
+The easiest way to run the project is using **Docker Desktop**.
 
-### 2. Backend Setup
-```bash
-cd Module1/backend
-npm install
-# Configure .env based on .env.example
-npm start
-```
+### 1. Prerequisite
+Ensure you have [Docker Desktop](https://www.docker.com/products/docker-desktop/) installed and running.
 
-### 3. Frontend Setup
+### 2. Launch the Application
+Navigate to the `Module1` directory and run:
 ```bash
-cd Module1/frontend
-npm install
-# Configure .env (VITE_API_URL=http://localhost:5001/api)
-npm run dev
-```
-
-### 4. Docker Deployment
-```bash
-cd Module1
 docker-compose up --build
 ```
+This single command will:
+- Spin up a **PostgreSQL** database.
+- Initialize the schema and tables automatically.
+- Start the **Node.js Backend** on port `5001`.
+- Start the **React Frontend** on port `3000`.
+
+### 3. Access the Platform
+Once the containers are running, open your browser to:
+- **Frontend**: [http://localhost:3000](http://localhost:3000)
+- **Backend API**: [http://localhost:5001/api](http://localhost:5001/api)
+
+---
+
+### Manual Setup (Alternative)
+If you prefer not to use Docker:
+
+**1. Database**: Install PostgreSQL and run `Module1/database/schema.sql` and `triggers.sql`.
+**2. Backend**: `cd Module1/backend && npm install && npm start`.
+**3. Frontend**: `cd Module1/frontend && npm install && npm run dev`.
 
 ## 🎨 Design System
 The project follows the Nexus Pro tokens:

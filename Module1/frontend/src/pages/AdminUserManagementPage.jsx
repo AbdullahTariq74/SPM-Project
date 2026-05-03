@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import api from '../services/api';
+import api, { BASE_URL } from '../services/api';
 import { useToast } from '../context/ToastContext';
 
 const STATUS_COLOR = {
@@ -120,7 +120,7 @@ export default function AdminUserManagementPage() {
                     <div className="flex items-center gap-3">
                       <img
                         src={u.profile_image_url
-                          ? `${import.meta.env.VITE_BASE_URL}${u.profile_image_url}`
+                          ? `${BASE_URL}${u.profile_image_url}`
                           : `https://i.pravatar.cc/100?u=${u.id}`}
                         className="w-10 h-10 rounded-xl object-cover"
                         alt=""

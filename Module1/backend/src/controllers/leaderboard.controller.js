@@ -10,7 +10,8 @@ const getLeaderboard = async (req, res) => {
     p.trust_score,
     p.tier_level,
     p.average_rating,
-    p.total_reviews
+    p.total_reviews,
+    p.profile_image_url
   FROM users u
   JOIN profiles p ON u.id = p.user_id
   WHERE u.role = 'freelancer'

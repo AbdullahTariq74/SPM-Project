@@ -1,6 +1,7 @@
 import React from 'react';
 import { useTheme } from '../../context/ThemeContext';
 import { useAuth } from '../../context/AuthContext';
+import { BASE_URL } from '../../services/api';
 
 export default function TopNavBar() {
   const { theme, toggleTheme } = useTheme();
@@ -50,7 +51,15 @@ export default function TopNavBar() {
             <p className="text-[9px] text-white/50 font-bold uppercase tracking-widest">{user?.role || 'Freelancer'}</p>
           </div>
           <div className="w-9 h-9 rounded-full bg-slate-700 border border-white/10 overflow-hidden">
-            <img src={`https://ui-avatars.com/api/?name=${user?.first_name || 'U'}&background=random`} alt="avatar" />
+            {user?.profile_image_url ? (
+              <img 
+                src={user.profile_image_url.startsWith('http') ? user.profile_image_url : `${BASE_URL}${user.profile_image_url}`} 
+                alt="avatar" 
+                className="w-full h-full object-cover"
+              />
+            ) : (
+              <img src={`https://ui-avatars.com/api/?name=${user?.first_name || 'U'}+${user?.last_name || ''}&background=random`} alt="avatar" />
+            )}
           </div>
         </div>
       </div>

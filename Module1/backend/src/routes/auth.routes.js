@@ -29,7 +29,10 @@ router.get("/me", protect, async (req, res) => {
   try {
     const pool = require("../config/db");
     const userResult = await pool.query(
-      "SELECT id, email, first_name, last_name, role, is_email_verified FROM users WHERE id = $1",
+      `SELECT u.id, u.email, u.first_name, u.last_name, u.role, u.is_email_verified, p.profile_image_url 
+       FROM users u 
+       LEFT JOIN profiles p ON u.id = p.user_id 
+       WHERE u.id = $1`,
       [req.user.id]
     );
     

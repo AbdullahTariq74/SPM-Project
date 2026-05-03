@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import api, { BASE_URL } from '../services/api';
 import { profileService } from '../services/profileService';
 import { useToast } from '../context/ToastContext';
 
@@ -83,7 +84,7 @@ export default function ProfileEditPage() {
           <div className="relative -mt-12 mb-6 flex items-end justify-between">
             <div className="relative group cursor-pointer" onClick={() => avatarRef.current.click()}>
               <div className="w-32 h-32 rounded-2xl border-4 border-white dark:border-surface-container-dark bg-slate-100 dark:bg-slate-800 overflow-hidden shadow-xl">
-                <img src={profile?.profile_image_url ? (profile.profile_image_url.startsWith('http') ? profile.profile_image_url : `http://localhost:5001${profile.profile_image_url}`) : `https://ui-avatars.com/api/?name=${profile?.display_name}&size=256`} className="w-full h-full object-cover" alt="avatar" />
+                <img src={profile?.profile_image_url ? (profile.profile_image_url.startsWith('http') ? profile.profile_image_url : `${BASE_URL}${profile.profile_image_url}`) : `https://ui-avatars.com/api/?name=${profile?.first_name || 'U'}+${profile?.last_name || ''}&size=256`} className="w-full h-full object-cover" alt="avatar" />
               </div>
               <div className="absolute inset-0 bg-black/40 rounded-2xl opacity-0 group-hover:opacity-100 flex items-center justify-center transition-all">
                 <span className="material-symbols-outlined text-white text-2xl">edit</span>

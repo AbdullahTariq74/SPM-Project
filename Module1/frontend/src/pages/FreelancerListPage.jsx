@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import api from '../services/api';
+import api, { BASE_URL } from '../services/api';
 import { useToast } from '../context/ToastContext';
 
 export default function FreelancerListPage() {
@@ -64,7 +64,7 @@ export default function FreelancerListPage() {
                 <div className="flex items-start gap-4 mb-4">
                   <div className="relative">
                     <img 
-                      src={f.profile_image_url ? `${import.meta.env.VITE_BASE_URL}${f.profile_image_url}` : `https://i.pravatar.cc/150?u=${f.id}`} 
+                      src={f.profile_image_url ? `${BASE_URL}${f.profile_image_url}` : `https://i.pravatar.cc/150?u=${f.id}`} 
                       className="w-16 h-16 rounded-2xl object-cover border-2 border-slate-100 dark:border-white/5"
                       alt="" 
                     />

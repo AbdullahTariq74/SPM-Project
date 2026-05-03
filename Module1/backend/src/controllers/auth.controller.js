@@ -156,7 +156,10 @@ const loginUser = async (req, res) => {
     // 1. CHECK USER EXISTS
     // =========================
     const userResult = await pool.query(
-      "SELECT * FROM users WHERE email = $1",
+      `SELECT u.*, p.profile_image_url 
+       FROM users u 
+       LEFT JOIN profiles p ON u.id = p.user_id 
+       WHERE u.email = $1`,
       [email]
     );
 
@@ -211,6 +214,7 @@ const loginUser = async (req, res) => {
         first_name: user.first_name,
         last_name: user.last_name,
         role: user.role,
+        profile_image_url: user.profile_image_url,
         rememberMe: rememberMe || false
       }
     });

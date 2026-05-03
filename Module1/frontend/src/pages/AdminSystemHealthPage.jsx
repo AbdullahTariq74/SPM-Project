@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Link, Navigate } from 'react-router-dom';
-import api from '../services/api';
+import api, { BASE_URL } from '../services/api';
 import { useToast } from '../context/ToastContext';
 import { useAuth } from '../context/AuthContext';
 
@@ -153,7 +153,7 @@ export default function AdminSystemHealthPage() {
                 <div className="w-9 h-9 rounded-full overflow-hidden bg-slate-200 flex-shrink-0">
                   <img
                     src={f.profile_image_url
-                      ? `${import.meta.env.VITE_BASE_URL}${f.profile_image_url}`
+                      ? `${BASE_URL}${f.profile_image_url}`
                       : `https://i.pravatar.cc/100?u=fl${f.id}`}
                     alt=""
                     className="w-full h-full object-cover"

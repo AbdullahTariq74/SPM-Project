@@ -145,7 +145,7 @@ const searchUsers = async (req, res) => {
 
     let query = `
       SELECT DISTINCT
-        u.id, u.first_name, u.last_name, u.role, u.country, u.is_identity_verified, u.account_status,
+        u.id, u.first_name, u.last_name, u.email, u.role, u.country, u.is_identity_verified, u.account_status,
         p.headline, p.profile_image_url, p.hourly_rate, p.average_rating, p.total_reviews, p.trust_score, p.tier_level
       FROM users u
       LEFT JOIN profiles p ON u.id = p.user_id

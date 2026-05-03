@@ -63,15 +63,11 @@ const updateProfile = async (req, res) => {
         experience_years,
         availability_status
       };
-    } else if (role === "client") {
+    } else if (role === "client" || role === "admin") {
       updatedData = {
         location,
         bio
       };
-    } else {
-      return res.status(403).json({
-        message: "Admins cannot update profile ❌"
-      });
     }
 
     // ---------------------------
