@@ -14,8 +14,10 @@ services:
       - DB_PASSWORD=admin123
       - JWT_SECRET=your_super_secret_jwt_key_here
       - JWT_EXPIRES_IN=7d
+      - EMAIL_HOST=smtp.gmail.com
+      - EMAIL_PORT=587
       - EMAIL_USER=spmprojectb@gmail.com
-      - EMAIL_PASS="rgul ahdh caze hizj"
+      - EMAIL_PASS=rgul ahdh caze hizj
     volumes:
       - ./backend/uploads:/app/uploads
 
