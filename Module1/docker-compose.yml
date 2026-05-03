@@ -5,10 +5,17 @@ services:
     build: ./backend
     ports:
       - "5001:5001"
-    env_file:
-      - ./backend/.env
     environment:
+      - PORT=5001
       - DB_HOST=db
+      - DB_PORT=5432
+      - DB_NAME=SPM_db
+      - DB_USER=postgres
+      - DB_PASSWORD=admin123
+      - JWT_SECRET=your_super_secret_jwt_key_here
+      - JWT_EXPIRES_IN=7d
+      - EMAIL_USER=spmprojectb@gmail.com
+      - EMAIL_PASS="rgul ahdh caze hizj"
     volumes:
       - ./backend/uploads:/app/uploads
 
