@@ -33,7 +33,14 @@ npm-debug.log*
 .planning/
 .gemini/
 .cursor/
+.cursorrules
+.claude/
+.kiro/
+.qoder/
 .code-review-graph/
+.mcp.json
+.opencode.json
+.windsurfrules
 AGENTS.md
 CLAUDE.md
 GEMINI.md

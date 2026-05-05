@@ -7,6 +7,8 @@ export default function TopNavBar() {
   const { theme, toggleTheme } = useTheme();
   const { user } = useAuth();
 
+  const [showNotifications, setShowNotifications] = React.useState(false);
+
   return (
     <header className="fixed top-0 left-0 right-0 h-16 bg-primary dark:bg-surface-container-dark text-white z-50 flex items-center px-6 border-b border-white/5">
       <div className="flex items-center gap-4 w-64">
@@ -36,10 +38,36 @@ export default function TopNavBar() {
             {theme === 'light' ? 'dark_mode' : 'light_mode'}
           </span>
         </button>
-        <button className="w-9 h-9 rounded-lg hover:bg-white/10 flex items-center justify-center relative transition-all">
-          <span className="material-symbols-outlined text-xl">notifications</span>
-          <span className="absolute top-2 right-2 w-2 h-2 bg-rose-500 rounded-full border border-primary"></span>
-        </button>
+        
+        <div className="relative">
+          <button 
+            onClick={() => setShowNotifications(!showNotifications)}
+            className={`w-9 h-9 rounded-lg flex items-center justify-center relative transition-all ${showNotifications ? 'bg-white/20' : 'hover:bg-white/10'}`}
+          >
+            <span className="material-symbols-outlined text-xl">notifications</span>
+            <span className="absolute top-2 right-2 w-2 h-2 bg-rose-500 rounded-full border border-primary"></span>
+          </button>
+
+          {showNotifications && (
+            <>
+              <div className="fixed inset-0 z-40" onClick={() => setShowNotifications(false)}></div>
+              <div className="absolute right-0 mt-2 w-80 bg-white dark:bg-surface-container-dark border border-slate-200 dark:border-white/10 rounded-2xl shadow-2xl z-50 animate-fade-in overflow-hidden">
+                <div className="p-4 border-b border-slate-100 dark:border-white/5 flex justify-between items-center">
+                  <h3 className="text-[10px] font-black uppercase tracking-widest text-slate-400">Notifications</h3>
+                  <span className="text-[9px] font-bold text-accent bg-accent/10 px-2 py-0.5 rounded-full">New</span>
+                </div>
+                <div className="p-8 text-center">
+                  <span className="material-symbols-outlined text-slate-200 dark:text-white/5 text-5xl mb-3">notifications_off</span>
+                  <p className="text-slate-900 dark:text-white text-xs font-black uppercase tracking-tight">All caught up!</p>
+                  <p className="text-slate-400 text-[10px] font-medium mt-1">No new notifications at this time.</p>
+                </div>
+                <div className="p-3 bg-slate-50 dark:bg-white/[0.02] text-center border-t border-slate-100 dark:border-white/5">
+                  <button className="text-[9px] font-black uppercase tracking-widest text-primary dark:text-accent hover:underline">View Notification History</button>
+                </div>
+              </div>
+            </>
+          )}
+        </div>
         
         <div className="h-8 w-px bg-white/10 mx-2"></div>
         
