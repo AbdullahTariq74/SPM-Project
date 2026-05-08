@@ -125,8 +125,8 @@ export default function AdminVerificationQueuePage() {
               Identity Requests
             </button>
             <button 
-              onClick={() => { setCategory('certificates'); setFilter('pending'); }}
-              className={`text-[10px] font-black uppercase tracking-widest pb-1 border-b-2 transition-all ${category === 'certificates' ? 'border-primary text-primary' : 'border-transparent text-slate-400'}`}
+              onClick={() => { setCategory('certifications'); setFilter('pending'); }}
+              className={`text-[10px] font-black uppercase tracking-widest pb-1 border-b-2 transition-all ${category === 'certifications' ? 'border-primary text-primary' : 'border-transparent text-slate-400'}`}
             >
               Certifications
             </button>

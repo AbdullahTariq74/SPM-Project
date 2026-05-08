@@ -130,8 +130,10 @@ const verifyCertification = async (req, res) => {
 
 const deleteCertification = async (req, res) => {
   try {
-    const userId = req.user.id || req.user.userId;
+    const userId = req.user.id;
     const { certId } = req.params;
+
+    console.log(`[DELETE_CERT] Attempting to delete cert ${certId} for user ${userId}`);
 
     const result = await pool.query(
       "DELETE FROM certifications WHERE id = $1 AND user_id = $2 RETURNING *",
@@ -139,12 +141,14 @@ const deleteCertification = async (req, res) => {
     );
 
     if (result.rows.length === 0) {
-      return res.status(404).json({ message: "Certification not found ❌" });
+      console.log(`[DELETE_CERT] Cert ${certId} not found for user ${userId}`);
+      return res.status(404).json({ message: "Certification not found or unauthorized ❌" });
     }
 
+    console.log(`[DELETE_CERT] Successfully deleted cert ${certId}`);
     res.json({ success: true, message: "Certification deleted ✅" });
   } catch (err) {
-    console.error(err);
+    console.error("[DELETE_CERT] Error:", err);
     res.status(500).json({ success: false, message: err.message || "Server error ❌" });
   }
 };

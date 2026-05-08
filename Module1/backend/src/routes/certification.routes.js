@@ -37,7 +37,7 @@ router.put(
 router.delete(
   "/:certId",
   auth,
-  allowRoles("freelancer"),
+  allowRoles("freelancer", "admin", "moderator"),
   deleteCertification
 );
 

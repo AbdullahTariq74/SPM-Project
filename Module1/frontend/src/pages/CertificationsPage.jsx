@@ -52,7 +52,6 @@ export default function CertificationsPage() {
   };
 
   const handleDelete = async (certId) => {
-    if (!confirm('Are you sure you want to remove this certification?')) return;
     try {
       await api.delete(`/certifications/${certId}`);
       addToast('Certification removed', 'success');

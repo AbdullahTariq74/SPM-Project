@@ -236,7 +236,7 @@ export default function DashboardPage() {
       </div>
 
       {/* Verification Status Banner (for Freelancers) */}
-      {isFreelancer && certifications.some(c => c.verification_status !== 'verified') && (
+      {isFreelancer && certifications.length > 0 && (
         <div className="card p-6 bg-accent/5 border-accent/20 border-dashed animate-fade-in mb-6">
           <div className="flex items-center gap-4">
             <div className="w-10 h-10 rounded-xl bg-accent/20 flex items-center justify-center">
@@ -245,11 +245,13 @@ export default function DashboardPage() {
             <div className="flex-1">
               <h4 className="text-xs font-black uppercase tracking-widest text-slate-900 dark:text-white">Active Verification Updates</h4>
               <div className="flex flex-wrap gap-x-6 gap-y-2 mt-2">
-                {certifications.filter(c => c.verification_status !== 'verified').slice(0, 3).map(c => (
+                {certifications.slice(-3).map(c => (
                   <div key={c.id} className="flex items-center gap-2">
                     <span className="text-[10px] font-bold text-slate-500 uppercase">{c.certification_name}:</span>
                     <span className={`text-[9px] font-black uppercase px-2 py-0.5 rounded-full ${
-                      c.verification_status === 'pending' ? 'bg-amber-500/10 text-amber-500' : 'bg-rose-500/10 text-rose-500'
+                      c.verification_status === 'pending' ? 'bg-amber-500/10 text-amber-500' : 
+                      c.verification_status === 'verified' ? 'bg-emerald-500/10 text-emerald-500' :
+                      'bg-rose-500/10 text-rose-500'
                     }`}>
                       {c.verification_status}
                     </span>
