@@ -11,6 +11,7 @@ export default function DashboardPage() {
   const [leaderboard, setLeaderboard] = useState([]);
   const [dashboardStats, setDashboardStats] = useState(null);
   const [recentActivities, setRecentActivities] = useState([]);
+  const [certifications, setCertifications] = useState([]);
   const [loading, setLoading] = useState(true);
   const { addToast } = useToast();
   const { user } = useAuth();
@@ -37,6 +38,10 @@ export default function DashboardPage() {
         if (user?.role === 'freelancer') {
           const lbRes = await api.get('/leaderboard');
           setLeaderboard(lbRes.data.leaderboard || []);
+
+          // Fetch Certs for status check
+          const certsRes = await api.get(`/certifications/${user.id}`);
+          setCertifications(certsRes.data.certifications || []);
         }
       } catch (err) {
         addToast('Failed to fetch dashboard data', 'error');
@@ -229,6 +234,41 @@ export default function DashboardPage() {
           </div>
         ))}
       </div>
+
+      {/* Verification Status Banner (for Freelancers) */}
+      {isFreelancer && certifications.some(c => c.verification_status !== 'verified') && (
+        <div className="card p-6 bg-accent/5 border-accent/20 border-dashed animate-fade-in mb-6">
+          <div className="flex items-center gap-4">
+            <div className="w-10 h-10 rounded-xl bg-accent/20 flex items-center justify-center">
+              <span className="material-symbols-outlined text-accent font-bold">notification_important</span>
+            </div>
+            <div className="flex-1">
+              <h4 className="text-xs font-black uppercase tracking-widest text-slate-900 dark:text-white">Active Verification Updates</h4>
+              <div className="flex flex-wrap gap-x-6 gap-y-2 mt-2">
+                {certifications.filter(c => c.verification_status !== 'verified').slice(0, 3).map(c => (
+                  <div key={c.id} className="flex items-center gap-2">
+                    <span className="text-[10px] font-bold text-slate-500 uppercase">{c.certification_name}:</span>
+                    <span className={`text-[9px] font-black uppercase px-2 py-0.5 rounded-full ${
+                      c.verification_status === 'pending' ? 'bg-amber-500/10 text-amber-500' : 'bg-rose-500/10 text-rose-500'
+                    }`}>
+                      {c.verification_status}
+                    </span>
+                    {c.verification_status === 'rejected' && (
+                      <span className="text-[9px] text-rose-400 italic">Reason: {c.rejection_reason || 'See details'}</span>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
+            <button 
+              onClick={() => navigate('/certifications')}
+              className="text-[10px] font-black uppercase text-accent hover:underline"
+            >
+              Manage All
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* Bottom Section: Activity & Talent/Projects */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">

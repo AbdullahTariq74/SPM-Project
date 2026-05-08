@@ -9,7 +9,8 @@ const {
   createCertification,
   verifyCertification,
   updateCertification,
-  deleteCertification
+  deleteCertification,
+  getAllCertifications
 } = require("../controllers/certification.controller");
 
 const upload = require("../utils/upload");
@@ -45,6 +46,13 @@ router.patch(
   auth,
   allowRoles("admin", "moderator"),
   verifyCertification
+);
+
+router.get(
+  "/admin/all",
+  auth,
+  allowRoles("admin", "moderator"),
+  getAllCertifications
 );
 
 module.exports = router;

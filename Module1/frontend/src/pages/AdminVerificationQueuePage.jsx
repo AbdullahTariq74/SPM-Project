@@ -17,7 +17,9 @@ export default function AdminVerificationQueuePage() {
   const { addToast } = useToast();
 
   const [requests, setRequests] = useState([]);
+  const [certifications, setCertifications] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [category, setCategory] = useState('identity'); // 'identity' or 'certificates'
   const [filter, setFilter] = useState('pending');
 
   const [showRejectModal, setShowRejectModal] = useState(false);
@@ -25,31 +27,43 @@ export default function AdminVerificationQueuePage() {
   const [rejectionReason, setRejectionReason] = useState('');
   const [submitting, setSubmitting] = useState(false);
 
-  useEffect(() => {
-    if (user?.role !== 'admin') return;
-    fetchRequests();
-  }, [filter, user]);
-
   const fetchRequests = async () => {
     setLoading(true);
     try {
-      const url = filter === 'all'
-        ? '/verification/admin/all'
-        : `/verification/admin/all?status=${filter}`;
-      const res = await api.get(url);
-      setRequests(res.data.requests);
+      if (category === 'identity') {
+        const url = filter === 'all'
+          ? '/verification/admin/all'
+          : `/verification/admin/all?status=${filter}`;
+        const res = await api.get(url);
+        setRequests(res.data.requests);
+      } else {
+        const url = filter === 'all'
+          ? '/certifications/admin/all'
+          : `/certifications/admin/all?status=${filter}`;
+        const res = await api.get(url);
+        setCertifications(res.data.certifications);
+      }
     } catch {
-      addToast('Failed to load verification requests', 'error');
+      addToast(`Failed to load ${category} requests`, 'error');
     } finally {
       setLoading(false);
     }
   };
 
-  const handleApprove = async (requestId) => {
+  useEffect(() => {
+    if (user?.role !== 'admin') return;
+    fetchRequests();
+  }, [category, filter, user]);
+
+  const handleApprove = async (id) => {
     setSubmitting(true);
     try {
-      await api.patch(`/verification/review/${requestId}`, { status: 'verified' });
-      addToast('Verification approved ✅', 'success');
+      if (category === 'identity') {
+        await api.patch(`/verification/review/${id}`, { status: 'verified' });
+      } else {
+        await api.patch(`/certifications/${id}/verify`, { status: 'verified' });
+      }
+      addToast('Approval successful ✅', 'success');
       fetchRequests();
     } catch {
       addToast('Failed to approve request', 'error');
@@ -71,11 +85,18 @@ export default function AdminVerificationQueuePage() {
     }
     setSubmitting(true);
     try {
-      await api.patch(`/verification/review/${selectedRequest.id}`, {
-        status: 'rejected',
-        rejection_reason: rejectionReason
-      });
-      addToast('Verification rejected', 'info');
+      if (category === 'identity') {
+        await api.patch(`/verification/review/${selectedRequest.id}`, {
+          status: 'rejected',
+          rejection_reason: rejectionReason
+        });
+      } else {
+        await api.patch(`/certifications/${selectedRequest.id}/verify`, {
+          status: 'rejected',
+          rejection_reason: rejectionReason
+        });
+      }
+      addToast('Rejection processed', 'info');
       setShowRejectModal(false);
       fetchRequests();
     } catch {
@@ -94,11 +115,22 @@ export default function AdminVerificationQueuePage() {
         <div>
           <p className="section-label mb-1">Platform Control • Admin</p>
           <h2 className="text-3xl font-black tracking-tighter text-slate-900 dark:text-white uppercase leading-none">
-            Verification Queue
+            {category === 'identity' ? 'Verification Queue' : 'Certifications Queue'}
           </h2>
-          <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-2">
-            Review and approve identity verification requests
-          </p>
+          <div className="flex gap-4 mt-3">
+            <button 
+              onClick={() => { setCategory('identity'); setFilter('pending'); }}
+              className={`text-[10px] font-black uppercase tracking-widest pb-1 border-b-2 transition-all ${category === 'identity' ? 'border-primary text-primary' : 'border-transparent text-slate-400'}`}
+            >
+              Identity Requests
+            </button>
+            <button 
+              onClick={() => { setCategory('certificates'); setFilter('pending'); }}
+              className={`text-[10px] font-black uppercase tracking-widest pb-1 border-b-2 transition-all ${category === 'certificates' ? 'border-primary text-primary' : 'border-transparent text-slate-400'}`}
+            >
+              Certifications
+            </button>
+          </div>
         </div>
         <div className="flex bg-white dark:bg-white/5 p-1 rounded-xl border border-slate-200 dark:border-white/5">
           {STATUS_TABS.map(tab => (
@@ -133,66 +165,129 @@ export default function AdminVerificationQueuePage() {
             <table className="w-full text-left">
               <thead className="bg-slate-50 dark:bg-white/[0.02] border-b border-slate-100 dark:border-white/5">
                 <tr>
-                  {['User', 'Type', 'Document', 'Status', 'Requested', 'Actions'].map(h => (
-                    <th key={h} className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-slate-400">{h}</th>
-                  ))}
+                  {category === 'identity' ? (
+                    ['User', 'Type', 'Document', 'Status', 'Requested', 'Actions'].map(h => (
+                      <th key={h} className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-slate-400">{h}</th>
+                    ))
+                  ) : (
+                    ['Freelancer', 'Certificate', 'Provider', 'Status', 'Submitted', 'Actions'].map(h => (
+                      <th key={h} className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-slate-400">{h}</th>
+                    ))
+                  )}
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100 dark:divide-white/5">
-                {requests.map(req => (
-                  <tr key={req.id} className="hover:bg-slate-50/50 dark:hover:bg-white/[0.01] transition-colors">
-                    <td className="px-6 py-4">
-                      <p className="text-sm font-black text-slate-900 dark:text-white">
-                        {req.first_name} {req.last_name}
-                      </p>
-                      <p className="text-[10px] text-slate-400">{req.email}</p>
-                    </td>
-                    <td className="px-6 py-4">
-                      <span className="text-[10px] font-black uppercase tracking-widest px-2.5 py-1 rounded-full bg-primary/10 text-primary">
-                        {req.verification_type}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4">
-                      <p className="text-xs font-bold text-slate-600 dark:text-slate-400">
-                        {req.document_type || '—'}
-                      </p>
-                    </td>
-                    <td className="px-6 py-4">
-                      <span className={`text-[9px] font-black uppercase tracking-widest px-2.5 py-1 rounded-full ${statusStyle[req.verification_status] || 'bg-slate-100 text-slate-500'}`}>
-                        {req.verification_status}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4">
-                      <p className="text-[10px] font-bold text-slate-400">
-                        {new Date(req.requested_at).toLocaleDateString()}
-                      </p>
-                    </td>
-                    <td className="px-6 py-4">
-                      {req.verification_status === 'pending' ? (
-                        <div className="flex items-center gap-2">
-                          <button
-                            onClick={() => handleApprove(req.id)}
-                            disabled={submitting}
-                            className="px-3 py-1.5 bg-emerald-500/10 text-emerald-500 hover:bg-emerald-500 hover:text-white text-[10px] font-black uppercase tracking-widest rounded-lg transition-all disabled:opacity-50"
-                          >
-                            Approve
-                          </button>
-                          <button
-                            onClick={() => openRejectModal(req)}
-                            disabled={submitting}
-                            className="px-3 py-1.5 bg-red-500/10 text-red-500 hover:bg-red-500 hover:text-white text-[10px] font-black uppercase tracking-widest rounded-lg transition-all disabled:opacity-50"
-                          >
-                            Reject
-                          </button>
-                        </div>
-                      ) : (
-                        <span className="text-[10px] font-bold text-slate-400 uppercase">
-                          {req.verification_status === 'verified' ? 'Approved' : 'Rejected'}
+                {category === 'identity' ? (
+                  requests.map(req => (
+                    <tr key={req.id} className="hover:bg-slate-50/50 dark:hover:bg-white/[0.01] transition-colors">
+                      <td className="px-6 py-4">
+                        <p className="text-sm font-black text-slate-900 dark:text-white">
+                          {req.first_name} {req.last_name}
+                        </p>
+                        <p className="text-[10px] text-slate-400">{req.email}</p>
+                      </td>
+                      <td className="px-6 py-4">
+                        <span className="text-[10px] font-black uppercase tracking-widest px-2.5 py-1 rounded-full bg-primary/10 text-primary">
+                          {req.verification_type}
                         </span>
-                      )}
-                    </td>
-                  </tr>
-                ))}
+                      </td>
+                      <td className="px-6 py-4">
+                        <p className="text-xs font-bold text-slate-600 dark:text-slate-400">
+                          {req.document_type || '—'}
+                        </p>
+                      </td>
+                      <td className="px-6 py-4">
+                        <span className={`text-[9px] font-black uppercase tracking-widest px-2.5 py-1 rounded-full ${statusStyle[req.verification_status] || 'bg-slate-100 text-slate-500'}`}>
+                          {req.verification_status}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4">
+                        <p className="text-[10px] font-bold text-slate-400">
+                          {new Date(req.requested_at).toLocaleDateString()}
+                        </p>
+                      </td>
+                      <td className="px-6 py-4">
+                        {req.verification_status === 'pending' ? (
+                          <div className="flex items-center gap-2">
+                            <button
+                              onClick={() => handleApprove(req.id)}
+                              disabled={submitting}
+                              className="px-3 py-1.5 bg-emerald-500/10 text-emerald-500 hover:bg-emerald-500 hover:text-white text-[10px] font-black uppercase tracking-widest rounded-lg transition-all disabled:opacity-50"
+                            >
+                              Approve
+                            </button>
+                            <button
+                              onClick={() => openRejectModal(req)}
+                              disabled={submitting}
+                              className="px-3 py-1.5 bg-red-500/10 text-red-500 hover:bg-red-500 hover:text-white text-[10px] font-black uppercase tracking-widest rounded-lg transition-all disabled:opacity-50"
+                            >
+                              Reject
+                            </button>
+                          </div>
+                        ) : (
+                          <span className="text-[10px] font-bold text-slate-400 uppercase">
+                            {req.verification_status === 'verified' ? 'Approved' : 'Rejected'}
+                          </span>
+                        )}
+                      </td>
+                    </tr>
+                  ))
+                ) : (
+                  certifications.map(cert => (
+                    <tr key={cert.id} className="hover:bg-slate-50/50 dark:hover:bg-white/[0.01] transition-colors">
+                      <td className="px-6 py-4">
+                        <p className="text-sm font-black text-slate-900 dark:text-white">
+                          {cert.first_name} {cert.last_name}
+                        </p>
+                        <p className="text-[10px] text-slate-400">{cert.email}</p>
+                      </td>
+                      <td className="px-6 py-4">
+                        <p className="text-xs font-black text-slate-900 dark:text-white uppercase tracking-tight">
+                          {cert.certification_name}
+                        </p>
+                      </td>
+                      <td className="px-6 py-4">
+                        <p className="text-xs font-bold text-slate-600 dark:text-slate-400">
+                          {cert.issuing_organization}
+                        </p>
+                      </td>
+                      <td className="px-6 py-4">
+                        <span className={`text-[9px] font-black uppercase tracking-widest px-2.5 py-1 rounded-full ${statusStyle[cert.verification_status] || 'bg-slate-100 text-slate-500'}`}>
+                          {cert.verification_status}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4">
+                        <p className="text-[10px] font-bold text-slate-400">
+                          {new Date(cert.created_at).toLocaleDateString()}
+                        </p>
+                      </td>
+                      <td className="px-6 py-4">
+                        {cert.verification_status === 'pending' ? (
+                          <div className="flex items-center gap-2">
+                            <button
+                              onClick={() => handleApprove(cert.id)}
+                              disabled={submitting}
+                              className="px-3 py-1.5 bg-emerald-500/10 text-emerald-500 hover:bg-emerald-500 hover:text-white text-[10px] font-black uppercase tracking-widest rounded-lg transition-all disabled:opacity-50"
+                            >
+                              Verify
+                            </button>
+                            <button
+                              onClick={() => openRejectModal(cert)}
+                              disabled={submitting}
+                              className="px-3 py-1.5 bg-red-500/10 text-red-500 hover:bg-red-500 hover:text-white text-[10px] font-black uppercase tracking-widest rounded-lg transition-all disabled:opacity-50"
+                            >
+                              Reject
+                            </button>
+                          </div>
+                        ) : (
+                          <span className="text-[10px] font-bold text-slate-400 uppercase">
+                            {cert.verification_status === 'verified' ? 'Verified' : 'Rejected'}
+                          </span>
+                        )}
+                      </td>
+                    </tr>
+                  ))
+                )}
               </tbody>
             </table>
           </div>

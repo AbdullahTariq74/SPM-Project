@@ -180,10 +180,34 @@ const updateCertification = async (req, res) => {
   }
 };
 
+const getAllCertifications = async (req, res) => {
+  try {
+    const { status } = req.query;
+    let query = `
+      SELECT c.*, u.first_name, u.last_name, u.email
+      FROM certifications c
+      JOIN users u ON c.user_id = u.id
+    `;
+    const params = [];
+    if (status) {
+      query += ` WHERE c.verification_status = $1`;
+      params.push(status);
+    }
+    query += ` ORDER BY c.created_at DESC`;
+
+    const result = await pool.query(query, params);
+    res.json({ success: true, certifications: result.rows });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ success: false, message: err.message || "Server error" });
+  }
+};
+
 module.exports = {
   getCertifications,
   createCertification,
   verifyCertification,
   updateCertification,
-  deleteCertification
+  deleteCertification,
+  getAllCertifications
 };
