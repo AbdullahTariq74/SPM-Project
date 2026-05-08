@@ -227,10 +227,14 @@ const getDashboardStats = async (req, res) => {
       };
     } else if (role === 'admin') {
       const userCount = await pool.query("SELECT COUNT(*) FROM users");
-      const pendingVerifications = await pool.query("SELECT COUNT(*) FROM verification_requests WHERE verification_status = 'pending'");
+      const pendingIdentity = await pool.query("SELECT COUNT(*) FROM verification_requests WHERE verification_status = 'pending'");
+      const pendingCerts = await pool.query("SELECT COUNT(*) FROM certifications WHERE verification_status = 'pending'");
+      
       stats = {
         total_users: parseInt(userCount.rows[0]?.count || 0),
-        pending_verifications: parseInt(pendingVerifications.rows[0]?.count || 0)
+        pending_verifications: parseInt(pendingIdentity.rows[0]?.count || 0) + parseInt(pendingCerts.rows[0]?.count || 0),
+        pending_identity: parseInt(pendingIdentity.rows[0]?.count || 0),
+        pending_certifications: parseInt(pendingCerts.rows[0]?.count || 0)
       };
     }
 

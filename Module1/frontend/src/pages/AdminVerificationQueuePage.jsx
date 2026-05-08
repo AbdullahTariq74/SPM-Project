@@ -30,21 +30,24 @@ export default function AdminVerificationQueuePage() {
   const fetchRequests = async () => {
     setLoading(true);
     try {
-      if (category === 'identity') {
-        const url = filter === 'all'
-          ? '/verification/admin/all'
-          : `/verification/admin/all?status=${filter}`;
-        const res = await api.get(url);
-        setRequests(res.data.requests);
-      } else {
-        const url = filter === 'all'
-          ? '/certifications/admin/all'
-          : `/certifications/admin/all?status=${filter}`;
-        const res = await api.get(url);
-        setCertifications(res.data.certifications);
-      }
+      // Always fetch both counts to keep tabs updated
+      const identityUrl = filter === 'all'
+        ? '/verification/admin/all'
+        : `/verification/admin/all?status=${filter}`;
+      
+      const certsUrl = filter === 'all'
+        ? '/certifications/admin/all'
+        : `/certifications/admin/all?status=${filter}`;
+
+      const [identityRes, certsRes] = await Promise.all([
+        api.get(identityUrl),
+        api.get(certsUrl)
+      ]);
+
+      setRequests(identityRes.data.requests || []);
+      setCertifications(certsRes.data.certifications || []);
     } catch {
-      addToast(`Failed to load ${category} requests`, 'error');
+      addToast(`Failed to load verification requests`, 'error');
     } finally {
       setLoading(false);
     }
@@ -120,15 +123,15 @@ export default function AdminVerificationQueuePage() {
           <div className="flex gap-4 mt-3">
             <button 
               onClick={() => { setCategory('identity'); setFilter('pending'); }}
-              className={`text-[10px] font-black uppercase tracking-widest pb-1 border-b-2 transition-all ${category === 'identity' ? 'border-primary text-primary' : 'border-transparent text-slate-400'}`}
+              className={`px-4 py-2 rounded-xl text-xs font-black uppercase tracking-widest transition-all ${category === 'identity' ? 'bg-primary text-white shadow-lg' : 'bg-slate-100 text-slate-500 hover:bg-slate-200'}`}
             >
-              Identity Requests
+              Identity ({requests.length})
             </button>
             <button 
               onClick={() => { setCategory('certifications'); setFilter('pending'); }}
-              className={`text-[10px] font-black uppercase tracking-widest pb-1 border-b-2 transition-all ${category === 'certifications' ? 'border-primary text-primary' : 'border-transparent text-slate-400'}`}
+              className={`px-4 py-2 rounded-xl text-xs font-black uppercase tracking-widest transition-all ${category === 'certifications' ? 'bg-primary text-white shadow-lg' : 'bg-slate-100 text-slate-500 hover:bg-slate-200'}`}
             >
-              Certifications
+              Certifications ({certifications.length})
             </button>
           </div>
         </div>

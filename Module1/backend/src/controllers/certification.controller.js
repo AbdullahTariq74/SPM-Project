@@ -87,7 +87,8 @@ const verifyCertification = async (req, res) => {
     const { certId } = req.params;
 
     const { status, rejection_reason } = req.body;
-    // status = "verified" OR "rejected"
+    
+    console.log(`[VERIFY_CERT] Cert ${certId} by Admin ${adminId} -> ${status}`);
 
     // ❌ validation
     if (!["verified", "rejected"].includes(status)) {

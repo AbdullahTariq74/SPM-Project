@@ -231,6 +231,13 @@ export default function DashboardPage() {
             </div>
             <p className="section-label mb-1 text-slate-400">{stat.label}</p>
             <p className="text-xl font-black text-slate-900 dark:text-white tracking-tight">{stat.value || 0}</p>
+            {isAdmin && stat.label === 'Pending Verifications' && (
+              <div className="mt-1 flex gap-2 text-[8px] font-bold uppercase tracking-widest text-slate-400">
+                <span>Identity: {dashboardStats?.pending_identity || 0}</span>
+                <span>•</span>
+                <span>Certs: {dashboardStats?.pending_certifications || 0}</span>
+              </div>
+            )}
           </div>
         ))}
       </div>
