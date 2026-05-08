@@ -24,8 +24,8 @@ export default function AdminSystemHealthPage() {
         setStats(statsRes.data.stats);
         setAllUsers(usersRes.data.users || []);
         setTopFreelancers((leaderboardRes.data.leaderboard || []).slice(0, 5));
-      } catch {
-        addToast('Failed to load system health data', 'error');
+      } catch (err) {
+        addToast(err.message, 'error');
       } finally {
         setLoading(false);
       }

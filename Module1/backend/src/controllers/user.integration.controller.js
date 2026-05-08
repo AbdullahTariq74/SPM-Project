@@ -26,7 +26,7 @@ const getUserById = async (req, res) => {
 
   } catch (err) {
     console.error(err);
-    res.status(500).json({ message: "Server error" });
+    res.status(500).json({ success: false, message: err.message || "Server error" });
   }
 };
 
@@ -52,7 +52,7 @@ const getUserProfile = async (req, res) => {
 
   } catch (err) {
     console.error(err);
-    res.status(500).json({ message: "Server error" });
+    res.status(500).json({ success: false, message: err.message || "Server error" });
   }
 };
 
@@ -79,7 +79,7 @@ const getUserSkills = async (req, res) => {
 
   } catch (err) {
     console.error(err);
-    res.status(500).json({ message: "Server error" });
+    res.status(500).json({ success: false, message: err.message || "Server error" });
   }
 };
 
@@ -105,7 +105,7 @@ const getUserTrust = async (req, res) => {
 
   } catch (err) {
     console.error(err);
-    res.status(500).json({ message: "Server error" });
+    res.status(500).json({ success: false, message: err.message || "Server error" });
   }
 };
 
@@ -131,7 +131,7 @@ const getUserVerification = async (req, res) => {
 
   } catch (err) {
     console.error(err);
-    res.status(500).json({ message: "Server error" });
+    res.status(500).json({ success: false, message: err.message || "Server error" });
   }
 };
 
@@ -193,7 +193,7 @@ const searchUsers = async (req, res) => {
 
   } catch (err) {
     console.error(err);
-    res.status(500).json({ message: "Server error" });
+    res.status(500).json({ success: false, message: err.message || "Server error" });
   }
 };
 
@@ -202,7 +202,7 @@ const searchUsers = async (req, res) => {
 // =========================
 const getDashboardStats = async (req, res) => {
   try {
-    const userId = req.user.id;
+    const userId = req.user.id || req.user.userId;
     const { role } = req.user;
 
     let stats = {};
@@ -241,7 +241,7 @@ const getDashboardStats = async (req, res) => {
 
   } catch (err) {
     console.error(err);
-    res.status(500).json({ message: "Server error" });
+    res.status(500).json({ success: false, message: err.message || "Server error" });
   }
 };
 
@@ -277,7 +277,7 @@ const updateUserStatus = async (req, res) => {
 
   } catch (err) {
     console.error(err);
-    res.status(500).json({ message: "Server error" });
+    res.status(500).json({ success: false, message: err.message || "Server error" });
   }
 };
 

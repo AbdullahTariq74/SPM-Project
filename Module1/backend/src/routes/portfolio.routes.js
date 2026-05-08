@@ -14,6 +14,8 @@ const {
   reorderProjects
 } = require("../controllers/portfolio.controller");
 
+const upload = require("../utils/upload");
+
 // -----------------------------
 // GET MY PORTFOLIO
 // -----------------------------
@@ -56,6 +58,7 @@ router.post(
   "/:projectId/upload-image",
   auth,
   allowRoles("freelancer"),
+  upload.single("image"),
   uploadProjectImage
 );
 

@@ -23,7 +23,7 @@ export default function LoginPage() {
       addToast('Welcome back to Nexus Pro!', 'success');
       navigate('/dashboard');
     } catch (err) {
-      addToast(err.response?.data?.message || 'Login failed ❌', 'error');
+      addToast(err.message, 'error');
     } finally {
       setLoading(false);
     }

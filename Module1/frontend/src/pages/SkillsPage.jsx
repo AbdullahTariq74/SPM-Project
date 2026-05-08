@@ -44,7 +44,7 @@ export default function SkillsPage() {
       setShowModal(false);
       loadData();
     } catch (err) {
-      addToast(err.response?.data?.message || 'Action failed', 'error');
+      addToast(err.message, 'error');
     }
   };
 
@@ -55,7 +55,7 @@ export default function SkillsPage() {
       addToast('Skill removed', 'success');
       loadData();
     } catch (err) {
-      addToast('Failed to delete skill', 'error');
+      addToast(err.message, 'error');
     }
   };
 
@@ -172,7 +172,7 @@ export default function SkillsPage() {
                   step="0.5"
                   className="input-field" 
                   value={formData.years_of_experience}
-                  onChange={(e) => setFormData(p => ({ ...p, years_of_experience: e.target.value }))}
+                  onChange={(e) => setFormData(p => ({ ...p, years_of_experience: parseFloat(e.target.value) || 0 }))}
                 />
               </div>
 

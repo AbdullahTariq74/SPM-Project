@@ -2,7 +2,7 @@ const pool = require("../config/db");
 
 const submitVerificationRequest = async (req, res) => {
   try {
-    const userId = req.user.id;
+    const userId = req.user.id || req.user.userId;
 
     const { verification_type, document_type } = req.body;
 
@@ -26,7 +26,7 @@ const submitVerificationRequest = async (req, res) => {
 
   } catch (err) {
     console.error(err);
-    res.status(500).json({ message: "Server error" });
+    res.status(500).json({ success: false, message: err.message || "Server error" });
   }
 };
 
@@ -47,13 +47,13 @@ const getUserRequests = async (req, res) => {
     res.json({ success: true, requests: result.rows });
 
   } catch (err) {
-    res.status(500).json({ message: "Server error" });
+    res.status(500).json({ success: false, message: err.message || "Server error" });
   }
 };
 
 const reviewRequest = async (req, res) => {
   try {
-    const adminId = req.user.id;
+    const adminId = req.user.id || req.user.userId;
     const { requestId } = req.params;
     const { status, rejection_reason } = req.body;
 
@@ -98,7 +98,7 @@ const reviewRequest = async (req, res) => {
     });
 
   } catch (err) {
-    res.status(500).json({ message: "Server error" });
+    res.status(500).json({ success: false, message: err.message || "Server error" });
   }
 };
 
@@ -131,7 +131,7 @@ const getAllVerificationRequests = async (req, res) => {
 
   } catch (err) {
     console.error(err);
-    res.status(500).json({ message: "Server error" });
+    res.status(500).json({ success: false, message: err.message || "Server error" });
   }
 };
 

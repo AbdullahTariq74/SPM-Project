@@ -47,7 +47,7 @@ export default function CertificationsPage() {
       setShowModal(false);
       loadCerts();
     } catch (err) {
-      addToast(err.response?.data?.message || 'Action failed', 'error');
+      addToast(err.message, 'error');
     }
   };
 
@@ -58,7 +58,7 @@ export default function CertificationsPage() {
       addToast('Certification removed', 'success');
       loadCerts();
     } catch (err) {
-      addToast('Failed to delete', 'error');
+      addToast(err.message, 'error');
     }
   };
 

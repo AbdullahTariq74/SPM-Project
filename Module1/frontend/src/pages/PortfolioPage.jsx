@@ -19,7 +19,7 @@ export default function PortfolioPage() {
       const res = await portfolioService.getMyPortfolio();
       setProjects(res.data.projects || []);
     } catch (err) {
-      addToast('Failed to load portfolio', 'error');
+      addToast(err.message, 'error');
     } finally {
       setLoading(false);
     }
@@ -41,7 +41,7 @@ export default function PortfolioPage() {
       setShowModal(false);
       loadProjects();
     } catch (err) {
-      addToast('Action failed', 'error');
+      addToast(err.message, 'error');
     }
   };
 
@@ -52,7 +52,7 @@ export default function PortfolioPage() {
       addToast('Project deleted', 'success');
       loadProjects();
     } catch (err) {
-      addToast('Failed to delete', 'error');
+      addToast(err.message, 'error');
     }
   };
 
@@ -65,7 +65,7 @@ export default function PortfolioPage() {
       addToast('Image uploaded!', 'success');
       loadProjects();
     } catch (err) {
-      addToast('Upload failed', 'error');
+      addToast(err.message, 'error');
     } finally {
       setUploading(false);
     }

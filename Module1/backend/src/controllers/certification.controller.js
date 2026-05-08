@@ -22,13 +22,13 @@ const getCertifications = async (req, res) => {
 
   } catch (err) {
     console.error(err);
-    res.status(500).json({ message: "Server error ❌" });
+    res.status(500).json({ success: false, message: err.message || "Server error ❌" });
   }
 };
 
 const createCertification = async (req, res) => {
   try {
-    const userId = req.user.id;
+    const userId = req.user.id || req.user.userId;
 
     const {
       certification_name,
@@ -77,7 +77,7 @@ const createCertification = async (req, res) => {
 
   } catch (err) {
     console.error(err);
-    res.status(500).json({ message: "Server error ❌" });
+    res.status(500).json({ success: false, message: err.message || "Server error ❌" });
   }
 };
 
@@ -124,13 +124,13 @@ const verifyCertification = async (req, res) => {
 
   } catch (err) {
     console.error(err);
-    res.status(500).json({ message: "Server error ❌" });
+    res.status(500).json({ success: false, message: err.message || "Server error ❌" });
   }
 };
 
 const deleteCertification = async (req, res) => {
   try {
-    const userId = req.user.id;
+    const userId = req.user.id || req.user.userId;
     const { certId } = req.params;
 
     const result = await pool.query(
@@ -145,13 +145,13 @@ const deleteCertification = async (req, res) => {
     res.json({ success: true, message: "Certification deleted ✅" });
   } catch (err) {
     console.error(err);
-    res.status(500).json({ message: "Server error ❌" });
+    res.status(500).json({ success: false, message: err.message || "Server error ❌" });
   }
 };
 
 const updateCertification = async (req, res) => {
   try {
-    const userId = req.user.id;
+    const userId = req.user.id || req.user.userId;
     const { certId } = req.params;
     const { certification_name, issuing_authority, credential_id, issue_date, expiry_date, verification_url } = req.body;
 
@@ -176,7 +176,7 @@ const updateCertification = async (req, res) => {
     res.json({ success: true, certification: result.rows[0] });
   } catch (err) {
     console.error(err);
-    res.status(500).json({ message: "Server error ❌" });
+    res.status(500).json({ success: false, message: err.message || "Server error ❌" });
   }
 };
 

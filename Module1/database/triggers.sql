@@ -62,7 +62,12 @@ DECLARE
     tier TEXT;
 BEGIN
 
-    uid := COALESCE(NEW.freelancer_id, NEW.user_id, OLD.freelancer_id, OLD.user_id);
+    -- Determine User ID based on table
+    IF TG_TABLE_NAME = 'reviews' THEN
+        uid := COALESCE(NEW.freelancer_id, OLD.freelancer_id);
+    ELSE
+        uid := COALESCE(NEW.user_id, OLD.user_id);
+    END IF;
 
     -- REVIEWS
     SELECT COALESCE(AVG(rating),0)

@@ -19,7 +19,7 @@ export default function WorkHistoryPage() {
       const res = await api.get(`/work/${user.id}`);
       setEntries(res.data.work_history || []);
     } catch (err) {
-      addToast('Failed to load work history', 'error');
+      addToast(err.message, 'error');
     } finally {
       setLoading(false);
     }
@@ -40,7 +40,7 @@ export default function WorkHistoryPage() {
       setShowModal(false);
       loadHistory();
     } catch (err) {
-      addToast('Action failed', 'error');
+      addToast(err.message, 'error');
     }
   };
 
@@ -51,7 +51,7 @@ export default function WorkHistoryPage() {
       addToast('Entry removed', 'success');
       loadHistory();
     } catch (err) {
-      addToast('Failed to delete', 'error');
+      addToast(err.message, 'error');
     }
   };
 

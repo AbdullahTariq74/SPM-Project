@@ -38,7 +38,7 @@ export default function RegisterPage() {
       addToast('Registration successful! Check your email.', 'success');
       navigate('/verify-email', { state: { email: formData.email } });
     } catch (err) {
-      addToast(err.response?.data?.message || 'Registration failed ❌', 'error');
+      addToast(err.message, 'error');
     } finally {
       setLoading(false);
     }

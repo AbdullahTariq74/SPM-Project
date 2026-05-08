@@ -17,10 +17,9 @@ const getAllSkills = async (req, res) => {
 
   } catch (error) {
     console.error("Error fetching skills:", error);
-
     res.status(500).json({
       success: false,
-      message: "Failed to fetch skills"
+      message: error.message || "Failed to fetch skills"
     });
   }
 };
@@ -85,10 +84,9 @@ const addUserSkill = async (req, res) => {
 
   } catch (error) {
     console.error("Error adding skill:", error);
-
     res.status(500).json({
       success: false,
-      message: "Failed to add skill"
+      message: error.message || "Failed to add skill"
     });
   }
 };
@@ -123,27 +121,17 @@ const getUserSkills = async (req, res) => {
 
   } catch (error) {
     console.error("Get user skills error:", error);
-
     res.status(500).json({
       success: false,
-      message: "Failed to fetch user skills"
+      message: error.message || "Failed to fetch user skills"
     });
   }
 };
 
 const updateUserSkill = async (req, res) => {
   try {
-    const authUserId = req.user.id || req.user.userId;
-
-    const userId = req.user.id;
+    const userId = req.user.id || req.user.userId;
     const skillId = req.params.skillId;
-    // 🔐 ownership check
-    if (Number(authUserId) !== Number(userId)) {
-      return res.status(403).json({
-        success: false,
-        message: "You can only update your own skills ❌"
-      });
-    }
 
     const {
       skill_level,
@@ -192,17 +180,16 @@ const updateUserSkill = async (req, res) => {
 
   } catch (error) {
     console.error("Update skill error:", error);
-
     res.status(500).json({
       success: false,
-      message: "Server error ❌"
+      message: error.message || "Server error ❌"
     });
   }
 };
 
 const deleteUserSkill = async (req, res) => {
   try {
-    const userId = req.user.id;
+    const userId = req.user.id || req.user.userId;
     const skillId = req.params.skillId;
 
     const result = await db.query(
@@ -228,10 +215,9 @@ const deleteUserSkill = async (req, res) => {
 
   } catch (error) {
     console.error("Delete skill error:", error);
-
     res.status(500).json({
       success: false,
-      message: "Server error ❌"
+      message: error.message || "Server error ❌"
     });
   }
 };
@@ -240,7 +226,7 @@ const pool = require("../config/db");
 
 const createSkillBadge = async (req, res) => {
   try {
-    const userId = req.user.id;
+    const userId = req.user.id || req.user.userId;
 
     const {
       skill_id,
@@ -275,7 +261,7 @@ const createSkillBadge = async (req, res) => {
     console.error(err);
     res.status(500).json({
       success: false,
-      message: "Server error ❌"
+      message: err.message || "Server error ❌"
     });
   }
 };

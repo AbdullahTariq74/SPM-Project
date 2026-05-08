@@ -2,7 +2,7 @@ const pool = require("../config/db");
 
 const getMyPortfolio = async (req, res) => {
   try {
-    const userId = req.user.id;
+    const userId = req.user.id || req.user.userId;
 
     const result = await pool.query(
       `
@@ -20,13 +20,14 @@ const getMyPortfolio = async (req, res) => {
     });
 
   } catch (err) {
-    res.status(500).json({ message: "Server error" });
+    console.error(err);
+    res.status(500).json({ success: false, message: err.message || "Server error" });
   }
 };
 
 const createProject = async (req, res) => {
   try {
-    const userId = req.user.id;
+    const userId = req.user.id || req.user.userId;
 
     const {
       title,
@@ -65,13 +66,14 @@ const createProject = async (req, res) => {
     res.json({ success: true, project: result.rows[0] });
 
   } catch (err) {
-    res.status(500).json({ message: "Server error" });
+    console.error(err);
+    res.status(500).json({ success: false, message: err.message || "Server error" });
   }
 };
 
 const updateProject = async (req, res) => {
   try {
-    const userId = req.user.id;
+    const userId = req.user.id || req.user.userId;
     const { projectId } = req.params;
 
     const result = await pool.query(
@@ -107,13 +109,14 @@ const updateProject = async (req, res) => {
     res.json({ success: true, project: result.rows[0] });
 
   } catch (err) {
-    res.status(500).json({ message: "Server error" });
+    console.error(err);
+    res.status(500).json({ success: false, message: err.message || "Server error" });
   }
 };
 
 const deleteProject = async (req, res) => {
   try {
-    const userId = req.user.id;
+    const userId = req.user.id || req.user.userId;
     const { projectId } = req.params;
 
     await pool.query(
@@ -127,13 +130,14 @@ const deleteProject = async (req, res) => {
     res.json({ success: true, message: "Deleted" });
 
   } catch (err) {
-    res.status(500).json({ message: "Server error" });
+    console.error(err);
+    res.status(500).json({ success: false, message: err.message || "Server error" });
   }
 };
 
 const uploadProjectImage = async (req, res) => {
   try {
-    const userId = req.user.id;
+    const userId = req.user.id || req.user.userId;
     const { projectId } = req.params;
 
     const imagePath = `/uploads/${req.file.filename}`;
@@ -155,7 +159,8 @@ const uploadProjectImage = async (req, res) => {
     });
 
   } catch (err) {
-    res.status(500).json({ message: "Server error" });
+    console.error(err);
+    res.status(500).json({ success: false, message: err.message || "Server error" });
   }
 };
 
@@ -184,7 +189,7 @@ const toggleFeatured = async (req, res) => {
 
   } catch (err) {
     console.error(err);
-    return res.status(500).json({ message: "Server error ❌" });
+    return res.status(500).json({ success: false, message: err.message || "Server error ❌" });
   }
 };
 
@@ -211,7 +216,7 @@ const reorderProjects = async (req, res) => {
     });
 
   } catch (err) {
-    res.status(500).json({ message: "Server error ❌" });
+    res.status(500).json({ success: false, message: err.message || "Server error ❌" });
   }
 };
 
