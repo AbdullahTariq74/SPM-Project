@@ -155,10 +155,14 @@ export default function AdminVerificationQueuePage() {
           <div className="flex items-center justify-center h-40">
             <div className="w-10 h-10 border-4 border-accent/20 border-t-accent rounded-full animate-spin" />
           </div>
-        ) : requests.length === 0 ? (
+        ) : (category === 'identity' ? requests : certifications).length === 0 ? (
           <div className="py-24 text-center">
-            <span className="material-symbols-outlined text-5xl text-slate-200 mb-4">verified_user</span>
-            <p className="text-sm font-bold text-slate-400">No requests found for "{filter}"</p>
+            <span className="material-symbols-outlined text-5xl text-slate-200 mb-4">
+              {category === 'identity' ? 'verified_user' : 'license'}
+            </span>
+            <p className="text-sm font-bold text-slate-400">
+              No {category === 'identity' ? 'identity' : 'certification'} requests found for "{filter}"
+            </p>
           </div>
         ) : (
           <div className="overflow-x-auto">
@@ -248,7 +252,7 @@ export default function AdminVerificationQueuePage() {
                       </td>
                       <td className="px-6 py-4">
                         <p className="text-xs font-bold text-slate-600 dark:text-slate-400">
-                          {cert.issuing_organization}
+                          {cert.issuing_authority}
                         </p>
                       </td>
                       <td className="px-6 py-4">
